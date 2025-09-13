@@ -1,9 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
-*/
-
-
 import { GoogleGenAI, GenerateContentResponse, Tool, HarmCategory, HarmBlockThreshold, Content } from "@google/genai";
 import { UrlContextMetadataItem } from '../types';
 

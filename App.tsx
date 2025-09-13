@@ -40,11 +40,16 @@ const MODEL_CAPABILITIES_URLS = [
 ];
 
 const INITIAL_URL_GROUPS: URLGroup[] = [
-  { id: 'gemini-overview', name: 'Gemini Docs Overview', urls: GEMINI_DOCS_URLS },
-  { id: 'model-capabilities', name: 'Model Capabilities', urls: MODEL_CAPABILITIES_URLS },
+  { id: 'gemini-overview', name: 'Brand Identity Discovery', urls: GEMINI_DOCS_URLS },
+  { id: 'model-capabilities', name: 'Brand Strategy Development', urls: ['https://www.adobe.com/express/learn/blog/brand-strategy'] },
+  { id: 'model-capabilities', name: 'Brand Identity Creation', urls: ['https://business.adobe.com/blog/basics/how-to-build-a-brand'] },
+  { id: 'model-capabilities', name: 'Content Development', urls: ['https://www.bynder.com/en/blog/5-step-guide-to-effective-content-development-process/'] },
+  { id: 'model-capabilities', name: 'Implementation & Rollout', urls: ['https://www.ramotion.com/blog/brand-implementation/#section-defining-brand-implementation'] },
+  { id: 'model-capabilities', name: 'Marketing & Growth Strategy', urls: ['https://rollingthunderdigital.com/?gad_source=1&gad_campaignid=17368541897&gbraid=0AAAAACxBJbjeB8dpuLLGX7agnzdvl1O74&gclid=EAIaIQobChMIp9OX5OLWjwMVnJCDBx3yVgzWEAAYAiAAEgJRk_D_BwE'] },
 ];
 
 const App: React.FC = () => {
+
   const [urlGroups, setUrlGroups] = useState<URLGroup[]>(INITIAL_URL_GROUPS);
   const [activeUrlGroupId, setActiveUrlGroupId] = useState<string>(INITIAL_URL_GROUPS[0].id);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -73,7 +78,6 @@ const App: React.FC = () => {
       timestamp: new Date(),
     }]);
   }, [activeUrlGroupId, urlGroups]);
-
 
   const fetchAndSetInitialSuggestions = useCallback(async (currentUrls: string[]) => {
     if (currentUrls.length === 0) {
@@ -244,7 +248,6 @@ const App: React.FC = () => {
             onSetGroupId={setActiveUrlGroupId}
             onCloseSidebar={() => setIsSidebarOpen(false)}
           />
-
         </div>
 
         <div className="w-full h-full p-3 md:p-0 md:w-2/3 lg:w-3/4">
