@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, MessageSender } from '../types';
 import MessageItem from './MessageItem';
-import { Send, Menu } from 'lucide-react';
+import { Menu, Send } from 'lucide-react';
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
