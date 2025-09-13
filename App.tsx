@@ -40,16 +40,15 @@ const MODEL_CAPABILITIES_URLS = [
 ];
 
 const INITIAL_URL_GROUPS: URLGroup[] = [
-  { id: 'gemini-overview', name: 'Brand Identity Discovery', urls: GEMINI_DOCS_URLS },
-  { id: 'model-capabilities', name: 'Brand Strategy Development', urls: ['https://www.adobe.com/express/learn/blog/brand-strategy'] },
-  { id: 'model-capabilities', name: 'Brand Identity Creation', urls: ['https://business.adobe.com/blog/basics/how-to-build-a-brand'] },
-  { id: 'model-capabilities', name: 'Content Development', urls: ['https://www.bynder.com/en/blog/5-step-guide-to-effective-content-development-process/'] },
-  { id: 'model-capabilities', name: 'Implementation & Rollout', urls: ['https://www.ramotion.com/blog/brand-implementation/#section-defining-brand-implementation'] },
-  { id: 'model-capabilities', name: 'Marketing & Growth Strategy', urls: ['https://rollingthunderdigital.com/?gad_source=1&gad_campaignid=17368541897&gbraid=0AAAAACxBJbjeB8dpuLLGX7agnzdvl1O74&gclid=EAIaIQobChMIp9OX5OLWjwMVnJCDBx3yVgzWEAAYAiAAEgJRk_D_BwE'] },
+  { id: 'b-discovery', name: 'Brand Identity Discovery', urls: ['https://medium.com/theymakedesign/brand-discovery-acb0bc424624'] },
+  { id: 'b-strategy', name: 'Brand Strategy Development', urls: ['https://www.adobe.com/express/learn/blog/brand-strategy'] },
+  { id: 'b-identity', name: 'Brand Identity Creation', urls: ['https://business.adobe.com/blog/basics/how-to-build-a-brand'] },
+  { id: 'b-content', name: 'Content Development', urls: ['https://www.bynder.com/en/blog/5-step-guide-to-effective-content-development-process/'] },
+  { id: 'b-rollout', name: 'Implementation & Rollout', urls: ['https://www.ramotion.com/blog/brand-implementation/#section-defining-brand-implementation'] },
+  { id: 'b-growth', name: 'Marketing & Growth Strategy', urls: ['https://rollingthunderdigital.com/?gad_source=1&gad_campaignid=17368541897&gbraid=0AAAAACxBJbjeB8dpuLLGX7agnzdvl1O74&gclid=EAIaIQobChMIp9OX5OLWjwMVnJCDBx3yVgzWEAAYAiAAEgJRk_D_BwE'] },
 ];
 
 const App: React.FC = () => {
-
   const [urlGroups, setUrlGroups] = useState<URLGroup[]>(INITIAL_URL_GROUPS);
   const [activeUrlGroupId, setActiveUrlGroupId] = useState<string>(INITIAL_URL_GROUPS[0].id);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -69,7 +68,7 @@ const App: React.FC = () => {
     const currentActiveGroup = urlGroups.find(group => group.id === activeUrlGroupId);
     const welcomeMessageText = !apiKey
       ? 'ERROR: Gemini API Key (process.env.API_KEY) is not configured. Please set this environment variable to use the application.'
-      : `Welcome to Documentation Browser! You're currently browsing content from: "${currentActiveGroup?.name || 'None'}". Just ask me questions, or try one of the suggestions below to get started`;
+      : `Welcome to Documentation Browser! You're currently browsing content from: "${currentActiveGroup?.name || 'None'}". Just ask me questions, or try one of the questions below to get started`;
 
     setChatMessages([{
       id: `system-welcome-${activeUrlGroupId}-${Date.now()}`,
@@ -88,8 +87,15 @@ const App: React.FC = () => {
     setIsFetchingSuggestions(true);
     setInitialQuerySuggestions([]);
 
+    /*
+    * Todo:
+    * ensure that initially we using the questions being the actual questions
+    *
+    */
+
     try {
       const response = await getInitialSuggestions(currentUrls);
+      console.log("response questions: ", response)
       let suggestionsArray: string[] = [];
       if (response.text) {
         try {
@@ -100,21 +106,21 @@ const App: React.FC = () => {
             jsonStr = match[2].trim();
           }
           const parsed = JSON.parse(jsonStr);
-          if (parsed && Array.isArray(parsed.suggestions)) {
-            suggestionsArray = parsed.suggestions.filter((s: unknown) => typeof s === 'string');
+          if (parsed && Array.isArray(parsed.questions)) {
+            suggestionsArray = parsed.questions.filter((s: unknown) => typeof s === 'string');
           } else {
-            console.warn("Parsed suggestions response, but 'suggestions' array not found or invalid:", parsed);
-            setChatMessages(prev => [...prev, { id: `sys-err-suggestion-fmt-${Date.now()}`, text: "Received suggestions in an unexpected format.", sender: MessageSender.SYSTEM, timestamp: new Date() }]);
+            console.warn("Parsed questions response, but 'questions' array not found or invalid:", parsed);
+            setChatMessages(prev => [...prev, { id: `sys-err-questions-fmt-${Date.now()}`, text: "Received questions in an unexpected format.", sender: MessageSender.SYSTEM, timestamp: new Date() }]);
           }
         } catch (parseError) {
-          console.error("Failed to parse suggestions JSON:", parseError, "Raw text:", response.text);
-          setChatMessages(prev => [...prev, { id: `sys-err-suggestion-parse-${Date.now()}`, text: "Error parsing suggestions from AI.", sender: MessageSender.SYSTEM, timestamp: new Date() }]);
+          console.error("Failed to parse questions JSON:", parseError, "Raw text:", response.text);
+          setChatMessages(prev => [...prev, { id: `sys-err-questions-parse-${Date.now()}`, text: "Error parsing questions from AI.", sender: MessageSender.SYSTEM, timestamp: new Date() }]);
         }
       }
       setInitialQuerySuggestions(suggestionsArray.slice(0, 4));
     } catch (e: any) {
-      const errorMessage = e.message || 'Failed to fetch initial suggestions.';
-      setChatMessages(prev => [...prev, { id: `sys-err-suggestion-fetch-${Date.now()}`, text: `Error fetching suggestions: ${errorMessage}`, sender: MessageSender.SYSTEM, timestamp: new Date() }]);
+      const errorMessage = e.message || 'Failed to fetch initial questions.';
+      setChatMessages(prev => [...prev, { id: `sys-err-questions-fetch-${Date.now()}`, text: `Error fetching questions: ${errorMessage}`, sender: MessageSender.SYSTEM, timestamp: new Date() }]);
     } finally {
       setIsFetchingSuggestions(false);
     }
@@ -126,7 +132,6 @@ const App: React.FC = () => {
     } else {
       setInitialQuerySuggestions([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUrlsForChat, fetchAndSetInitialSuggestions]);
 
 
@@ -219,6 +224,12 @@ const App: React.FC = () => {
     ? `Ask questions about "${activeGroup?.name || 'current documents'}"...`
     : "Select a group and/or add URLs to the knowledge base to enable chat.";
 
+  function changeGroupId(test) {
+    console.log("testing... ", test);
+    setActiveUrlGroupId(test)
+    // throw new Error('Function not implemented.');
+  }
+
   return (
     <div
       className="h-screen max-h-screen antialiased relative overflow-x-hidden bg-[#121212] text-[#E2E2E2]"
@@ -245,7 +256,7 @@ const App: React.FC = () => {
             maxUrls={MAX_URLS}
             urlGroups={urlGroups}
             activeUrlGroupId={activeUrlGroupId}
-            onSetGroupId={setActiveUrlGroupId}
+            onSetGroupId={(i) => changeGroupId(i)}
             onCloseSidebar={() => setIsSidebarOpen(false)}
           />
         </div>

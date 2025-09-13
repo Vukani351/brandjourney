@@ -93,20 +93,22 @@ export const generateContentWithUrlContext = async (
   }
 };
 
-// This function now aims to get a JSON array of string suggestions.
+// This function now aims to get a JSON array of string questions.
 export const getInitialSuggestions = async (urls: string[]): Promise<GeminiResponse> => {
   if (urls.length === 0) {
     // This case should ideally be handled by the caller, but as a fallback:
-    return { text: JSON.stringify({ suggestions: ["Add some URLs to get topic suggestions."] }) };
+    return { text: JSON.stringify({ questions: ["Add some URLs to get topic questions."] }) };
   }
   const currentAi = getAiInstance();
   const urlList = urls.join('\n');
 
   // Prompt updated to request JSON output of short questions
-  const promptText = `Based on the content of the following documentation URLs, provide 3-4 concise and actionable questions a developer might ask to explore these documents. These questions should be suitable as quick-start prompts. Return ONLY a JSON object with a key "suggestions" containing an array of these question strings. For example: {"suggestions": ["What are the rate limits?", "How do I get an API key?", "Explain model X."]}
-
-Relevant URLs:
-${urlList}`;
+  const promptText = `
+    Based on the content of the following research URLs, provide 3-4 concise and actionable questions to answer so the person achiieves the branding task of whats discussed in the following url. 
+    These questions should be suitable as quick-start prompts. Return ONLY a JSON object with a key "questions".
+    For example: {"questions": ["what are your goals and purpose for your brand?", "What difference does your brand bring to the world?", "Explain brand X."]}
+    Relevant URLs:
+    ${urlList}`;
 
   const contents: Content[] = [{ role: "user", parts: [{ text: promptText }] }];
 
@@ -122,23 +124,23 @@ ${urlList}`;
 
     const text = response.text; // This should be the JSON string
     // urlContextMetadata is not expected here because tools cannot be used with responseMimeType: "application/json"
-    // const urlContextMetadata = response.candidates?.[0]?.urlContextMetadata?.urlMetadata as UrlContextMetadataItem[] | undefined;
+    const urlContextMetadata = response.candidates?.[0]?.urlContextMetadata?.urlMetadata as UrlContextMetadataItem[] | undefined;
 
-    return { text /*, urlContextMetadata: undefined */ }; // Explicitly undefined or not included
+    return { text, urlContextMetadata: urlContextMetadata  /**/ }; // Explicitly undefined or not included
 
   } catch (error) {
-    console.error("Error calling Gemini API for initial suggestions:", error);
+    console.error("Error calling Gemini API for initial questions:", error);
     if (error instanceof Error) {
       const googleError = error as any;
       if (googleError.message && googleError.message.includes("API key not valid")) {
-        throw new Error("Invalid API Key for suggestions. Please check your GEMINI_API_KEY environment variable.");
+        throw new Error("Invalid API Key for questions. Please check your GEMINI_API_KEY environment variable.");
       }
       // Check for the specific error message and re-throw a more informative one if needed
       if (googleError.message && googleError.message.includes("Tool use with a response mime type: 'application/json' is unsupported")) {
-        throw new Error("Configuration error: Cannot use tools with JSON response type for suggestions. This should be fixed in the code.");
+        throw new Error("Configuration error: Cannot use tools with JSON response type for questions. This should be fixed in the code.");
       }
-      throw new Error(`Failed to get initial suggestions from AI: ${error.message}`);
+      throw new Error(`Failed to get initial questions from AI: ${error.message}`);
     }
-    throw new Error("Failed to get initial suggestions from AI due to an unknown error.");
+    throw new Error("Failed to get initial questions from AI due to an unknown error.");
   }
 };
