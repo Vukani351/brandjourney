@@ -4,8 +4,8 @@
 
 ## ▶️ Running the Application
 ``` c
-// TODO: Explain how to launch the project.
-// Add commands or steps here.
+    you have to run "npm i"
+    then run "npm start"
 ```
 ``` bash
 # Example
