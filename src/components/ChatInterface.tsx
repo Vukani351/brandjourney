@@ -106,8 +106,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <textarea
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
-            placeholder="Ask about the documents..."
-            className="flex-grow h-8 min-h-[32px] py-1.5 px-2.5 border border-[rgba(255,255,255,0.1)] bg-[#2C2C2C] text-[#E2E2E2] placeholder-[#777777] rounded-lg focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-shadow resize-none text-sm"
+            placeholder="introduce yourself then ask for questions to answer aboutt your brand..."
+            className="flex-grow h-8 min-h-[32px] py-1.5 px-2.5 border border-[rgba(255,255,255,0.1)] bg-[#2C2C2C] text-gray placeholder-[#777777] rounded-lg focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-shadow resize-none text-sm"
             rows={1}
             disabled={isLoading || isFetchingSuggestions}
             onKeyPress={(e) => {

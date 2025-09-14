@@ -104,9 +104,13 @@ export const getInitialSuggestions = async (urls: string[]): Promise<GeminiRespo
 
   // Prompt updated to request JSON output of short questions
   const promptText = `
-    Based on the content of the following research URLs, provide 3-4 concise and actionable questions to answer so the person achiieves the branding task of whats discussed in the following url. 
-    These questions should be suitable as quick-start prompts. Return ONLY a JSON object with a key "questions".
-    For example: {"questions": ["what are your goals and purpose for your brand?", "What difference does your brand bring to the world?", "Explain brand X."]}
+    Based on the content of the following research URLs, 
+    act as a branding consultant helping me to get a software engineering job,
+    return a suggeestion of who i am as a developer then suggest first question i should answer for me to create brand identity.
+    Return ONLY a JSON object with a key "questions".
+    For example: {"questions": [
+      "i am a junior developer trying to get job, what questions should i answer to get brand identity right",
+    ]}
     Relevant URLs:
     ${urlList}`;
 

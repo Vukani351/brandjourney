@@ -94,7 +94,8 @@ const App: React.FC = () => {
     */
 
     try {
-      const response = await getInitialSuggestions(currentUrls);
+      // const response = await getInitialSuggestions(currentUrls);
+      const response = { text: "{\n  \"questions\": [\n    \"I am a JUNIOR dev trying to get a job, help me create brand ID, ask me questions to answer to create one\",\n    \"give me list of questions to answer so i can make my brand id. then tell me what to do after\"\n  ]\n}" };
       console.log("response questions: ", response)
       let suggestionsArray: string[] = [];
       if (response.text) {
